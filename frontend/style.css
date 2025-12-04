@@ -1,0 +1,38 @@
+/* Optional external CSS if you want separation */
+/* But inlining is better for contest (fewer HTTP requests) */
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    .container {
+        padding: 0.5rem;
+    }
+    
+    .input-group {
+        flex-direction: column;
+    }
+    
+    .metrics-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    h1 {
+        font-size: 1.5rem;
+    }
+}
+
+/* Print styles (saves ink/toner) */
+@media print {
+    button, .input-group, .loading {
+        display: none !important;
+    }
+    
+    body {
+        background: white !important;
+        color: black !important;
+    }
+    
+    .results {
+        display: block !important;
+        border: 1px solid #ccc;
+    }
+}

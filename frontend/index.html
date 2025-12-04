@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌿 EcoAudit • GreenIT Calculator</title>
+    <meta name="description" content="Calculate your webpage's carbon footprint - N2ITLSE Contest">
+    
+    <!-- INLINE CRITICAL CSS (Contest: Reduce HTTP requests) -->
+    <style>
+        /* SYSTEM FONTS ONLY (No web fonts = -100KB) */
+        :root {
+            --bg: #0a0a0a;
+            --surface: #1a1a1a;
+            --text: #f0f0f0;
+            --accent: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 1rem;
+        }
+        
+        /* DARK THEME BY DEFAULT (Saves OLED energy) */
+        @media (prefers-color-scheme: light) {
+            :root {
+                --bg: #ffffff;
+                --surface: #f9fafb;
+                --text: #111827;
+            }
+        }
+        
+        /* REDUCED MOTION (Accessibility + Energy) */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-top: 1rem;
+        }
+        
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: var(--accent);
+        }
+        
+        .tagline {
+            opacity: 0.8;
+            font-size: 1rem;
+        }
+        
+        .contest-badge {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+        
+        .analyzer {
+            background: var(--surface);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .input-group {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        input[type="url"] {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: 1px solid #374151;
+            border-radius: 0.375rem;
+            background: var(--bg);
+            color: var(--text);
+            font-size: 1rem;
+        }
+        
+        input[type="url"]:focus {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+        
+        button {
+            padding: 0.75rem 1.5rem;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 0.375rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        
+        button:hover {
+            opacity: 0.9;
+        }
+        
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 1rem 0;
+        }
+        
+        .loading.active {
+            display: block;
+        }
+        
+        .results {
+            background: var(--surface);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            display: none;
+        }
+        
+        .results.active {
+            display: block;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+        
+        .metric-card {
+            background: var(--bg);
+            padding: 1rem;
+            border-radius: 0.375rem;
+            border-left: 4px solid var(--accent);
+        }
+        
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 0.25rem 0;
+        }
+        
+        .metric-good { color: var(--accent); }
+        .metric-warning { color: var(--warning); }
+        .metric-danger { color: var(--danger); }
+        
+        .comparison {
+            font-size: 0.875rem;
+            opacity: 0.8;
+        }
+        
+        .score-circle {
+            width: 120px;
+            height: 120px;
+            margin: 1rem auto;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            background: conic-gradient(var(--accent) 0% var(--score-percent), var(--surface) var(--score-percent) 100%);
+        }
+        
+        .score-value {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+        
+        .score-label {
+            font-size: 0.875rem;
+            opacity: 0.8;
+        }
+        
+        .tips {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #374151;
+        }
+        
+        .tip {
+            background: var(--bg);
+            padding: 1rem;
+            border-radius: 0.375rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #374151;
+            font-size: 0.875rem;
+            opacity: 0.7;
+        }
+        
+        .stats {
+            font-size: 0.75rem;
+            opacity: 0.6;
+            margin-top: 0.5rem;
+        }
+    </style>
+    
+    <!-- SVG FAVICON (Data URI = 0 HTTP requests) -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22 fill=%22%2310b981%22>🌿</text></svg>">
+    
+    <!-- PREFETCH BACKEND (If known) -->
+    <link rel="dns-prefetch" href="http://localhost:3000">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌿 EcoAudit</h1>
+            <p class="tagline">Calculate your webpage's carbon footprint</p>
+            <span class="contest-badge">N2ITLSE GreenIT Challenge</span>
+        </header>
+        
+        <main>
+            <section class="analyzer">
+                <h2>Analyze Website</h2>
+                <div class="input-group">
+                    <input 
+                        type="url" 
+                        id="urlInput" 
+                        placeholder="https://example.com"
+                        value="https://example.com"
+                    >
+                    <button id="analyzeBtn">Calculate Footprint</button>
+                </div>
+                <p style="opacity: 0.7; font-size: 0.875rem;">
+                    We respect privacy: Analysis happens in your browser, no data stored.
+                </p>
+                
+                <div class="loading" id="loading">
+                    <p>🌍 Analyzing carbon footprint...</p>
+                    <div style="width: 100%; height: 4px; background: var(--surface); margin-top: 0.5rem;">
+                        <div style="width: 0%; height: 100%; background: var(--accent); transition: width 0.3s;" id="progressBar"></div>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="results" id="results">
+                <h2>Analysis Results</h2>
+                <div id="urlDisplay" style="opacity: 0.8; margin-bottom: 1rem;"></div>
+                
+                <div class="score-circle" id="scoreCircle">
+                    <div class="score-value" id="scoreValue">--</div>
+                    <div class="score-label">Green Score</div>
+                </div>
+                
+                <div class="metrics-grid" id="metricsGrid">
+                    <!-- Filled by JavaScript -->
+                </div>
+                
+                <div class="tips" id="tips">
+                    <h3>💡 Tips to Improve</h3>
+                    <!-- Filled by JavaScript -->
+                </div>
+            </section>
+        </main>
+        
+        <footer>
+            <p>🌱 Made for the N2ITLSE GreenIT Challenge</p>
+            <p>Contest metrics: Minimal DOM • Lightweight • Energy Efficient</p>
+            <div class="stats" id="pageStats">
+                Loading performance stats...
+            </div>
+        </footer>
+    </div>
+    
+    <!-- DEFERRED JAVASCRIPT (Contest: Non-blocking) -->
+    <script src="script.js" defer></script>
+</body>
+</html>
