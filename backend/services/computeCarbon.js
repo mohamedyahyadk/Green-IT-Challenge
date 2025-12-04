@@ -1,22 +1,15 @@
-module.exports = function computeCarbon(data) {
-    const { resources } = data;
+const axios = require("axios");
 
-    // تقدير حجم الصفحة
-    const pageSizeKB = resources.length * 50; // 50KB لكل مورد
+module.exports = async function fetchPage(url) {
+    try {
+        const response = await axios.get(url, {
+            headers: {
+                "User-Agent": "GreenIT Analyzer Bot"
+            }
+        });
 
-    // حساب CO2
-    const carbonEmission = (pageSizeKB / 1024) * 0.8;
-
-    // حساب التقييم ECO-Score
-    let ecoScore = "C";
-    if (pageSizeKB < 500) ecoScore = "A";
-    else if (pageSizeKB < 1000) ecoScore = "B";
-    else if (pageSizeKB < 2000) ecoScore = "C";
-    else ecoScore = "D";
-
-    return {
-        pageSizeKB,
-        carbonEmission: parseFloat(carbonEmission.toFixed(3)),
-        ecoScore
-    };
+        return response.data; 
+    } catch (err) {
+        throw new Error("Erreur lors du chargement de la page: " + err.message);
+    }
 };
