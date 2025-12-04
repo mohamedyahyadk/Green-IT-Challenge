@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Green Page Analyzer</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Poppins", sans-serif;
+        }
+
+        body {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        header {
+            text-align: center;
+            padding: 30px;
+            background: #66bb6a;
+            color: white;
+            border-bottom-left-radius: 30px;
+            border-bottom-right-radius: 30px;
+        }
+
+        .container {
+            background: white;
+            max-width: 450px;
+            margin: 40px auto;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 15px 0;
+            border-radius: 10px;
+            border: 2px solid #66bb6a;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #2e7d32;
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #1b5e20;
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e0f2f1;
+            border-left: 4px solid #2e7d32;
+            border-radius: 10px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .classification {
+            margin-top: 10px;
+            font-weight: bold;
+            padding: 8px;
+            border-radius: 8px;
+        }
+
+        .green { background:#c8e6c9; color:#2e7d32; }
+        .yellow { background:#fff9c4; color:#f57f17; }
+        .red { background:#ffcdd2; color:#c62828; }
+
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            color: #388e3c;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+     <!-- <h1>🌍♻ Green Page Analyzer</h1> -->
+     <h1>♻ Green Page Analyzer</h1>
+        <p>Analyse l'empreinte carbone d'une page web</p>
+    </header>
+
+    <main>
+        <div class="container">
+            <h2>Entrer l’URL de la page</h2>
+
+            <input type="text" id="urlInput" placeholder="https://exemple.com">
+
+            <button onclick="analyze()">Analyser la Page ♻</button>
+
+            <div id="result" class="result hidden">
+                <h3>Résultats de l’analyse</h3>
+                <p><strong>Nombre d’éléments DOM :</strong> <span id="domCount">0</span></p>
+                <p><strong>Nombre de requêtes HTTP :</strong> <span id="reqCount">0</span></p>
+                <p><strong>Taille estimée de la page :</strong> <span id="pageSize">0</span> Ko</p>
+                <p><strong>Empreinte Carbone estimée :</strong> <span id="co2">0</span> g CO₂</p>
+                <p class="classification hidden" id="classification">Classification</p>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>Projet Green IT — Respect de l’environnement 🌍</p>
+
+ </body>
+</html>
