@@ -1,0 +1,27 @@
+{
+  "name": "green-it-challenge",
+  "version": "1.0.0",
+  "description": "Une application web légère, optimisée et respectueuse de l’environnement, développée pour le défi **Nuit de l’Info**.  \r Le projet met en avant une architecture éco-responsable, un backend optimisé, un frontend minimaliste et un système complet de monitoring Green IT basé sur les diagrammes UML fournis.",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mohamedyahyadk/Green-IT-Challenge.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mohamedyahyadk/Green-IT-Challenge/issues"
+  },
+  "homepage": "https://github.com/mohamedyahyadk/Green-IT-Challenge#readme",
+  "dependencies": {
+    "axios": "^1.13.2",
+    "jsdom": "^27.2.0"
+  }
+}
