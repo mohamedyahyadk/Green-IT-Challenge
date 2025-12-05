@@ -4,14 +4,22 @@ const analyzeRoute = require("./routes/analyzeRoute");
 
 const app = express();
 
-// middlewares
-app.use(cors());
-app.use(express.json());
+// Middlewares
+app.use(cors({
+    origin: "*", // يسمح لأي frontend بالاتصال
+    methods: "GET,POST",
+}));
+app.use(express.json({ limit: "5mb" })); // لمنع JSON errors
 
-// routes
+// TEST ROUTE
+app.get("/", (req, res) => {
+    res.send("Backend is working ✅");
+});
+
+// API Routes
 app.use("/api", analyzeRoute);
 
-// server start
+// Start server
 const PORT = 5000;
 app.listen(PORT, () => {
     console.log(`🚀 Server running on http://localhost:${PORT}`);

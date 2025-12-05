@@ -1,20 +1,41 @@
-function computePageSize(resources) {
-    let totalBytes = 0;
+const axios = require("axios");
 
-    for (const item of resources.requests) {
-        if (item.size) {
-            totalBytes += item.size;
+module.exports = async function computePageSize(analysis) {
+    let totalKB = 0;
+
+    const baseUrl = analysis.url;
+    const resources = analysis.resources || [];
+
+    const requests = resources.map(async (res) => {
+        if (!res.src) return 0;
+
+        let fullUrl;
+
+        try {
+            // تحويل الرابط النسبي إلى رابط كامل
+            fullUrl = new URL(res.src, baseUrl).href;
+        } catch {
+            return 0;
         }
-    }
 
-    const kb = totalBytes / 1024;
-    const mb = kb / 1024;
+        try {
+            const response = await axios.get(fullUrl, {
+                responseType: "arraybuffer"
+            });
+
+            const size = Buffer.byteLength(response.data) / 1024; // KB
+            return size;
+
+        } catch (err) {
+            return 0;
+        }
+    });
+
+    const sizes = await Promise.all(requests);
+
+    sizes.forEach(size => totalKB += size);
 
     return {
-        bytes: totalBytes,
-        kb: Math.round(kb * 100) / 100,
-        mb: Math.round(mb * 100) / 100
+        totalKB: Number(totalKB.toFixed(2))
     };
-}
-
-module.exports = computePageSize;
+};

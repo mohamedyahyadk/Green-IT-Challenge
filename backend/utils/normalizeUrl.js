@@ -1,13 +1,17 @@
-function normalizeUrl(url) {
+module.exports = function normalizeUrl(url) {
+    if (!url) return "";
+
     url = url.trim();
 
-    // إذا يبدأ بـ http:// أو https:// لا نضيف شيء
-    if (url.startsWith("http://") || url.startsWith("https://")) {
-        return url.toLowerCase().replace(/\/+$/, "");
+    // لو يبدأ بـ www ولا يحتوي http
+    if (url.startsWith("www.") && !url.startsWith("http")) {
+        return "https://" + url;
     }
 
-    // إذا لا يبدأ ببروتوكول، نضيف https://
-    return "https://" + url.toLowerCase().replace(/\/+$/, "");
-}
+    // لو لا يحتوي http ولا https
+    if (!url.startsWith("http://") && !url.startsWith("https://")) {
+        return "https://" + url;
+    }
 
-module.exports = normalizeUrl;
+    return url;
+};
