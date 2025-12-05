@@ -1,50 +1,38 @@
-const normalizeUrl = require("../utils/normalizeUrl");
-const fetchPage = require("../services/fetchPage");
-const extractResources = require("../services/extractResources");
-const computePageSize = require("../utils/computePageSize");
-const computeCarbon = require("../services/computeCarbon");
+const axios = require("axios");
+const { JSDOM } = require("jsdom");
 
 exports.analyzePage = async (req, res) => {
+    const { url } = req.body;
+    if (!url) return res.status(400).json({ error: "URL manquante" });
+
     try {
-        const { url } = req.body;
+        const response = await axios.get(url);
+        const html = response.data;
 
-        if (!url) {
-            return res.status(400).json({ error: "URL is required" });
-        }
+        const dom = new JSDOM(html);
+        const domCount = dom.window.document.getElementsByTagName("*").length;
 
-        // 1) Normalize
-        const cleanUrl = normalizeUrl(url);
+       
+        const pageSizeKB = Buffer.byteLength(html, "utf-8") / 1024;
+        const requestCount = (html.match(/<img|<script|<link/g) || []).length;
 
-        // 2) Fetch HTML
-        const html = await fetchPage(cleanUrl);
+    
+        const carbonEmission = (pageSizeKB * 0.0005).toFixed(2); 
 
-        // 3) Extract DOM + resources
-        const analysis = await extractResources(cleanUrl, html);
-
-        // 4) Compute total page size
-        const sizeInfo = await computePageSize(analysis);
-
-        // 5) Compute carbon footprint (only carbon)
-        const carbon = computeCarbon(sizeInfo.totalKB);
-
-        // 6) Score
-        const ecoScore =
-            sizeInfo.totalKB < 500 ? "A" :
-            sizeInfo.totalKB < 1500 ? "B" :
-            sizeInfo.totalKB < 3000 ? "C" : "D";
+       
+        let ecoScore = "C";
+        if (carbonEmission < 0.5) ecoScore = "A";
+        else if (carbonEmission < 1.0) ecoScore = "B";
 
         res.json({
-            url: cleanUrl,
-            domCount: analysis.domCount,
-            requestCount: analysis.requests,
-            pageSizeKB: sizeInfo.totalKB,
-            carbonEmission: carbon,
-            ecoScore,
-            resources: analysis.resources
+            domCount,
+            requestCount,
+            pageSizeKB: pageSizeKB.toFixed(0),
+            carbonEmission,
+            ecoScore
         });
 
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Failed to analyze page" });
+        res.status(500).json({ error: "Impossible d'analyser la page" });
     }
 };

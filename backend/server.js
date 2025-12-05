@@ -1,22 +1,16 @@
 const express = require("express");
 const cors = require("cors");
 const analyzeRoute = require("./routes/analyzeRoute");
-
 const app = express();
 
 // Middlewares
-app.use(cors({
-    origin: "*", // يسمح لأي frontend بالاتصال
-    methods: "GET,POST",
-}));
-app.use(express.json({ limit: "5mb" })); // لمنع JSON errors
+app.use(cors({ origin: "*", methods: "GET,POST" }));
+app.use(express.json({ limit: "5mb" }));
 
-// TEST ROUTE
-app.get("/", (req, res) => {
-    res.send("Backend is working ✅");
-});
+// 📌 عرض الملفات الثابتة (HTML, CSS, JS)
+app.use(express.static("public"));
 
-// API Routes
+// API routes
 app.use("/api", analyzeRoute);
 
 // Start server
