@@ -2,7 +2,7 @@
   "name": "green-it-challenge",
   "version": "1.0.0",
   "description": "Une application web légère, optimisée et respectueuse de l’environnement, développée pour le défi **Nuit de l’Info**.  \r Le projet met en avant une architecture éco-responsable, un backend optimisé, un frontend minimaliste et un système complet de monitoring Green IT basé sur les diagrammes UML fournis.",
-  "main": "index.js",
+  "main": "server.js",
   "directories": {
     "doc": "docs"
   },
