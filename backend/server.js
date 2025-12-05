@@ -7,7 +7,6 @@ const app = express();
 app.use(cors({ origin: "*", methods: "GET,POST" }));
 app.use(express.json({ limit: "5mb" }));
 
-// 📌 عرض الملفات الثابتة (HTML, CSS, JS)
 app.use(express.static("public"));
 
 // API routes
