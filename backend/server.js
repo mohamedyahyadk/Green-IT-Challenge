@@ -7,8 +7,7 @@ const app = express();
 app.use(cors({ origin: "*", methods: "GET,POST" }));
 app.use(express.json({ limit: "5mb" }));
 
-app.use(express.static("public"));
-
+app.use(express.static("backend/public"));
 // API routes
 app.use("/api", analyzeRoute);
 
