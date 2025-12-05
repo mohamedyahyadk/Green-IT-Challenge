@@ -6,20 +6,36 @@ exports.analyzePage = async (req, res) => {
     if (!url) return res.status(400).json({ error: "URL manquante" });
 
     try {
-        const response = await axios.get(url);
+        // important: some websites block axios without a browser User-Agent
+        const response = await axios.get(url, {
+            headers: {
+                "User-Agent":
+                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36"
+            },
+            timeout: 15000
+        });
+
         const html = response.data;
 
+        // Parse DOM using jsdom
         const dom = new JSDOM(html);
-        const domCount = dom.window.document.getElementsByTagName("*").length;
+        const document = dom.window.document;
 
-       
+        const domCount = document.getElementsByTagName("*").length;
+
+        // Detect HTTP requests
+        const images = [...document.querySelectorAll("img")].length;
+        const scripts = [...document.querySelectorAll("script")].length;
+        const links = [...document.querySelectorAll("link")].length;
+        const requestCount = images + scripts + links;
+
+        // Compute size
         const pageSizeKB = Buffer.byteLength(html, "utf-8") / 1024;
-        const requestCount = (html.match(/<img|<script|<link/g) || []).length;
 
-    
-        const carbonEmission = (pageSizeKB * 0.0005).toFixed(2); 
+        // Carbon footprint estimation
+        const carbonEmission = (pageSizeKB * 0.0005).toFixed(2);
 
-       
+        // Score
         let ecoScore = "C";
         if (carbonEmission < 0.5) ecoScore = "A";
         else if (carbonEmission < 1.0) ecoScore = "B";
@@ -31,8 +47,10 @@ exports.analyzePage = async (req, res) => {
             carbonEmission,
             ecoScore
         });
-
     } catch (error) {
-        res.status(500).json({ error: "Impossible d'analyser la page" });
+        return res.status(500).json({
+            error: "Impossible d'analyser la page",
+            details: error.message
+        });
     }
 };

@@ -137,15 +137,13 @@
 
         try {
 
-            // 🔥 هنا تم الإصلاح: إضافة await وحفظ response
             const response = await fetch("https://green-it-challenge-1.onrender.com/api/analyse", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ url })
             });
 
-            const data = await response.json(); // استخراج البيانات
-
+            const data = await response.json(); 
             if (!response.ok) {
                 throw new Error(data.error || "Erreur inconnue");
             }
